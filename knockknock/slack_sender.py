@@ -99,7 +99,8 @@ def slack_sender(webhook_url: str, channel: str, user_mentions: List[str] = []):
                             "Traceback:",
                             '%s' % traceback.format_exc()]
                 contents.append(' '.join(user_mentions))
-                dump['text'] = '\n'.join(contents)
+                dump["attachments"] = [{"blocks": [{"type": "section", "text": {"type": "plain_text","text": '\n'.join(contents[-5:-1])}}]}]
+                dump['text'] = '\n'.join(contents[:-5]+contents[-1:])
                 dump['icon_emoji'] = ':skull_and_crossbones:'
                 requests.post(webhook_url, json.dumps(dump))
                 raise ex
