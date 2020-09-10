@@ -1,5 +1,6 @@
 import argparse
 import subprocess
+import sys
 
 from knockknock import (chime_sender,
                         desktop_sender,
@@ -200,7 +201,18 @@ def main():
 
     verbose = args.pop("verbose")
 
-    def run_func(): return subprocess.run(remaining_args, check=True)
+    def run_func():
+        p = subprocess.Popen(remaining_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        stdout = ''
+        for line in p.stdout: # b'\n'-separated lines
+            print(line, end='') # pass bytes as is
+            stdout += line
+        p.wait()
+        stderr = p.stderr.read()
+        # stdout, stderr = p.communicate()
+        if p.returncode != 0:
+            raise Exception(str(p.args)+'\n'+stderr)
+        return str(p.args) + '\n' + '\n'.join(stdout.split('\n')[-15:])
     run_func.__name__ = " ".join(
         remaining_args) if verbose else remaining_args[0]
 
