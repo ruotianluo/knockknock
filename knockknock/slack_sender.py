@@ -99,10 +99,13 @@ def slack_sender(webhook_url: str, channel: str, user_mentions: List[str] = []):
                             "Traceback:",
                             '%s' % traceback.format_exc()]
                 contents.append(' '.join(user_mentions))
-                dump["attachments"] = [{"blocks": [{"type": "section", "text": {"type": "plain_text","text": '\n'.join(contents[-5:-1])}}]}]
-                dump['text'] = '\n'.join(contents[:-5]+contents[-1:])
+                dump["attachments"] = [{"blocks": [{"type": "section", "text": {"type": "plain_text","text": '\n'.join(contents[-3:-1])}}]}]
+                dump['text'] = '\n'.join(contents[:-3]+contents[-1:])
                 dump['icon_emoji'] = ':skull_and_crossbones:'
-                requests.post(webhook_url, json.dumps(dump))
+                r = requests.post(webhook_url, json.dumps(dump))
+                if not r.ok:
+                    del dump["attachments"]
+                    requests.post(webhook_url, json.dumps(dump))
                 raise ex
 
         return wrapper_sender
