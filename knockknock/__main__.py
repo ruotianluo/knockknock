@@ -208,7 +208,7 @@ def main():
             print(line, end='') # pass bytes as is
             stdout += line
         p.wait()
-        stderr = p.stderr.read()
+        stderr = ''.join(p.stderr.readlines()[-100:])
         # stdout, stderr = p.communicate()
         if p.returncode != 0:
             raise Exception(str(p.args)+'\n'+stderr)
