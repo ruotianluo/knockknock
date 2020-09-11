@@ -205,7 +205,8 @@ def main():
         p = subprocess.Popen(remaining_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         stdout = ''
         for line in p.stdout: # b'\n'-separated lines
-            print(line, end='') # pass bytes as is
+            sys.stdout.write(line) # pass bytes as is
+            sys.stdout.flush()
             stdout += line
         p.wait()
         stderr = ''.join(p.stderr.readlines()[-100:])
